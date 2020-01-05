@@ -1,0 +1,24 @@
+{
+  "name": "joplin-to-anki",
+  "version": "0.0.0",
+  "description": "Export formatted data from Joplin and import into Anki",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "anki",
+    "joplin",
+    "import",
+    "export",
+    "srs"
+  ],
+  "author": "BartBucknill",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "himalaya": "^1.1.0",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.8"
+  }
+}

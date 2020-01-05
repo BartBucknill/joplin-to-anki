@@ -1,3 +1,6 @@
+env.txt
+dev/
+
 # Logs
 logs
 *.log
