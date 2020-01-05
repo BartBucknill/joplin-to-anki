@@ -3,13 +3,16 @@ const cheerio = require('cheerio')
 
 const extractQuiz = (iteratee, body, title) => {
     const $ = cheerio.load(body)
-    console.log('quiz id:', $('.quiz').attr('data-id'))
-    console.log('question:', $('.question').text())
-    console.log('answer:', $('.answer').text())
+    const quizID = $('.quiz').attr('data-id')
+    const question = $('.question').text()
+    const answer = $('.answer').text()
+    if (quizID && question && answer) {
+        return iteratee(process.env.ANKI_URL, question, answer, quizID)
+    }
 }
 
 const ping = (url, token) => {
-    rp(`${url}/ping`)
+    return rp(`${url}/ping`)
 }
 
 const paramsGen = (token, fields) => {
@@ -30,7 +33,7 @@ const get = (url, token, fields) => {
     return rp({uri: url + params, json: true})
 }
 
-const exportJoplin = async(url, token, datetime, iteratee) => {
+const exporter = async(url, token, datetime, iteratee) => {
     try {
         const date = new Date(datetime);
         const notes = await get(urlGen(url, 'notes'), token, 'id,user_updated_time')
@@ -49,5 +52,5 @@ const exportJoplin = async(url, token, datetime, iteratee) => {
 
 module.exports = {
     ping,
-    exportJoplin,
+    exporter,
 }

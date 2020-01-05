@@ -1,11 +1,11 @@
-const { exportJoplin } = require('./joplin');
+const { exporter } = require('./joplin')
+const dotenv = require('dotenv')
+const { parsed: env } = dotenv.config()
 
-const url = process.env.JOPLIN_URL;
-const token = process.env.JOPLIN_TOKEN;
-
-const test = async() => {
-    const result = await exportJoplin(url, token, '2020-01-04T06:27:06.000Z')
-    .catch(console.error)
+const test = async () => {
+    console.log(env)
+    const result = await exporter(env.JOPLIN_URL, env.JOPLIN_TOKEN, '2020-01-04T06:27:06.000Z')
+        .catch(console.error)
     console.log(result)
 }
 test()

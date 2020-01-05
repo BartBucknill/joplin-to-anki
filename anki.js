@@ -65,7 +65,7 @@ const createDeck = (url) => {
     return doRequest(options)
 }
 
-const ankiSetup = async (url) => {
+const setup = async (url) => {
     const templates = await getModels(url)
     if (!templates[modelName]) {
         await createModel(url)
@@ -129,7 +129,7 @@ const updateNote = (url, id, question, answer, quizID) => {
 
 }
 
-const ankiImport = async (url, question, answer, quizID) => {
+const importer = async (url, question, answer, quizID) => {
     const noteIDs = await findNote(url, quizID)
     if (noteIDs.length > 1) {
         throw new Error('Oops, expected at most one note but found multiple: ', notes)
@@ -141,7 +141,12 @@ const ankiImport = async (url, question, answer, quizID) => {
 
 }
 
+const ping = async (url) => {
+    return rp(url)
+}
+
 module.exports = {
-    ankiSetup,
-    ankiImport,
+    ping,
+    setup,
+    importer,
 }
