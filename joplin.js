@@ -8,7 +8,6 @@ const extractQuiz = (iteratee, body, title) => {
     console.log('answer:', $('.answer').text())
 }
 
-
 const ping = (url, token) => {
     rp(`${url}/ping`)
 }
@@ -47,8 +46,6 @@ const exportJoplin = async(url, token, datetime, iteratee) => {
     }
 
 }
-
-
 
 module.exports = {
     ping,
