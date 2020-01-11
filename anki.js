@@ -87,7 +87,9 @@ const findNote = (url, quizID) => {
     return doRequest(options)
 }
 
-const createNote = (url, question, answer, jtaID) => {
+const formatTag = string => string.replace(/ /g, '_')
+
+const createNote = (url, question, answer, jtaID, title, notebook, tags) => {
     const options = optionsGen(url, {
         'action': 'addNote',
         'version': 6,
@@ -102,7 +104,10 @@ const createNote = (url, question, answer, jtaID) => {
                     'Joplin to Anki ID': jtaID,
                 },
                 'tags': [
-                    'joplin_to_anki'
+                    'joplin_to_anki',
+                    formatTag(title),
+                    formatTag(notebook),
+                    ...tags,
                 ],
             }
         }
@@ -110,7 +115,22 @@ const createNote = (url, question, answer, jtaID) => {
     return doRequest(options)
 }
 
-const updateNote = (url, id, question, answer, jtaID) => {
+const updateNoteTags = (url, id, title, notebook, joplinTags) => {
+    const tags = joplinTags.map(tag => formatTag(tag))
+    tags.push(formatTag(title))
+    tags.push(formatTag(notebook))
+    const options = optionsGen(url, {
+        "action": "addTags",
+        "version": 6,
+        "params": {
+            "notes": [id],
+            "tags": tags.join(' ')
+        }
+    })
+    return doRequest(options)
+}
+
+const updateNote = (url, id, question, answer, jtaID, notebook, tags) => {
     const options = optionsGen(url, {
         'action': 'updateNoteFields',
         'version': 6,
@@ -129,16 +149,16 @@ const updateNote = (url, id, question, answer, jtaID) => {
 
 }
 
-const importer = async (url, question, answer, quizID) => {
-    const noteIDs = await findNote(url, quizID)
+const importer = async (url, question, answer, jtaID, title, notebook, tags) => {
+    const noteIDs = await findNote(url, jtaID)
     if (noteIDs.length > 1) {
-        throw new Error('Oops, expected at most one note but found multiple: ', notes)
+        throw new Error(`Oops, expected at most one note with Joplin to Anki ID ${jtaID} but found multiple: \n${notes}`)
     }
     if (noteIDs.length === 1) {
-        return updateNote(url, noteIDs[0], question, answer, quizID)
+        await updateNote(url, noteIDs[0], question, answer, jtaID, notebook, tags)
+        return updateNoteTags(url, noteIDs[0], title, notebook, tags)
     }
-    return createNote(url, question, answer, quizID)
-
+    return createNote(url, question, answer, jtaID, title, notebook, tags)
 }
 
 const ping = async (url) => {
