@@ -3,3 +3,4 @@ Create quiz entries inside Joplin notes and auto import them as notes into Anki.
 
 **Known Issues**
 - Anki note browser should be closed during import; if open, _updates to note fields_ will not appear as expected.
+- For markdown to render in the Default template `Answer` field a newline is needed after the `</summary>` tag

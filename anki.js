@@ -34,7 +34,7 @@ const createModel = (url) => {
         'version': 6,
         'params': {
             modelName,
-            inOrderFields: ['Question', 'Answer', 'Quiz ID'],
+            inOrderFields: ['Question', 'Answer', 'Joplin to Anki ID'],
             cardTemplates: [
                 {
                     Front: '{{Question}}',
@@ -87,7 +87,7 @@ const findNote = (url, quizID) => {
     return doRequest(options)
 }
 
-const createNote = (url, question, answer, quizID) => {
+const createNote = (url, question, answer, jtaID) => {
     const options = optionsGen(url, {
         'action': 'addNote',
         'version': 6,
@@ -99,7 +99,7 @@ const createNote = (url, question, answer, quizID) => {
                 'fields': {
                     'Question': question,
                     'Answer': answer,
-                    'Quiz ID': quizID,
+                    'Joplin to Anki ID': jtaID,
                 },
                 'tags': [
                     'joplin_to_anki'
@@ -110,7 +110,7 @@ const createNote = (url, question, answer, quizID) => {
     return doRequest(options)
 }
 
-const updateNote = (url, id, question, answer, quizID) => {
+const updateNote = (url, id, question, answer, jtaID) => {
     const options = optionsGen(url, {
         'action': 'updateNoteFields',
         'version': 6,

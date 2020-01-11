@@ -39,6 +39,11 @@ const anki = require('./anki')
 const dotenv = require('dotenv')
 const { parsed: env } = dotenv.config()
 
+const log = (msg) => {
+    if (!!env.DEBUG) {
+        console.log(msg)
+    }
+}
 
 const run = async() => {
 
@@ -47,22 +52,28 @@ const run = async() => {
         console.error(`Did not recieve expected response from Anki api at ${env.JOPLIN_URL}/ping\nResponse: ${pingJoplin}\nExiting.`)
         process.exit()
     }
+    log('Pinged Joplin')
+
     const pingAnki = await anki.ping(env.ANKI_URL)
     if (pingAnki != 'AnkiConnect v.6') {
         console.error(`Did not recieve expected response from Anki api at ${env.ANKI_URL}\nResponse: ${pingAnki}\nExiting.`)
         process.exit()
     }
+    log('Pinged Anki')
 
-    await anki.setup(env.ANKI_URL)
-    .catch(error => {
+    try {
+        await anki.setup(env.ANKI_URL)
+    } catch (error) {
         console.error(`Problem with Anki prerequisites (Joplin deck and model): ${error}`)
         process.exit()
-    })
-    .then(() => joplin.exporter(env.JOPLIN_URL, env.JOPLIN_TOKEN, env.EXPORT_FROM_DATE, anki.importer))
-    .catch(error => {
+    }
+
+    try {
+       await joplin.exporter(env.JOPLIN_URL, env.JOPLIN_TOKEN, env.EXPORT_FROM_DATE, anki.importer)
+    } catch (error) {
         console.error(`Problem with job: ${error}`)
         process.exit()
-    })
+    }
 
 }
 

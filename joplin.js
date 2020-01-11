@@ -3,12 +3,12 @@ const cheerio = require('cheerio')
 
 const extractQuiz = (iteratee, body, title) => {
     const $ = cheerio.load(body)
-    const quizID = $('.quiz').attr('data-id')
-    const question = $('.question').text()
-    const answer = $('.answer').text()
-    if (quizID && question && answer) {
-        return iteratee(process.env.ANKI_URL, question, answer, quizID)
-    }
+    $('.jta').each((i, el) => {
+        const jtaID = $(el).attr('data-id')
+        const question = $('.question', el).text()
+        const answer = $('.answer', el).text()
+        iteratee(process.env.ANKI_URL, question, answer, jtaID)
+    })
 }
 
 const ping = (url, token) => {
@@ -30,10 +30,10 @@ const urlGen = (baseURL, resource, id) => {
 
 const get = (url, token, fields) => {
     const params = paramsGen(token, fields)
-    return rp({uri: url + params, json: true})
+    return rp({ uri: url + params, json: true })
 }
 
-const exporter = async(url, token, datetime, iteratee) => {
+const exporter = async (url, token, datetime, iteratee) => {
     try {
         const date = new Date(datetime);
         const notes = await get(urlGen(url, 'notes'), token, 'id,user_updated_time')
@@ -45,7 +45,7 @@ const exporter = async(url, token, datetime, iteratee) => {
             }
         })
     } catch (error) {
-       console.error('Oops, something went wrong: ', error)
+        console.error('Oops, something went wrong: ', error)
     }
 
 }
@@ -53,4 +53,5 @@ const exporter = async(url, token, datetime, iteratee) => {
 module.exports = {
     ping,
     exporter,
+    extractQuiz,
 }
