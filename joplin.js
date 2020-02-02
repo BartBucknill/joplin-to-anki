@@ -1,14 +1,48 @@
-const rp = require('request-promise-native');
+const path = require('path');
+const rp = require('request-promise-native')
 const cheerio = require('cheerio')
 
-const extractQuiz = (iteratee, body, title, notebook, tags) => {
+const extractQuiz = (body, title, notebook, tags) => {
     const $ = cheerio.load(body)
+    let output = []
     $('.jta').each((i, el) => {
         const jtaID = $(el).attr('data-id')
         const question = $('.question', el).text()
         const answer = $('.answer', el).text()
-        iteratee(process.env.ANKI_URL, question, answer, jtaID, title, notebook, tags)
+        output.push({ question, answer, jtaID, title, notebook, tags })
     })
+    return output
+}
+
+const escapeRegExp = string => {
+    const reRegExpChar = /[\\^$.*+?()[\]{}|]/g
+    return string.replace(reRegExpChar, '\\$&')
+}
+
+const addResources = (jtaItems, resources) => {
+    const preppedResources = resources.map(resource => {
+        const fileName = `${resource.title ? path.parse(resource.title).name : resource.id}.${resource.file_extension}`
+        return {
+            fileName,
+            expectedLinkRgx: new RegExp(escapeRegExp(`![${resource.title}](:\/${resource.id})`), 'g'),
+            replacementLink: `<div><img src="${fileName}"><br></div>`,
+            id: resource.id,
+        }
+    })
+    jtaItems.forEach(item => {
+        preppedResources.forEach(resource => {
+            if (resource.expectedLinkRgx.test(item.answer)) {
+                const updatedAnswer = item.answer.replace(resource.expectedLinkRgx, resource.replacementLink)
+                item.answer = updatedAnswer
+                if (!item.resources) {
+                    item.resources = []
+                }
+                item.resources.push({ id: resource.id, fileName: resource.fileName })
+            }
+        }
+        )
+    })
+    return jtaItems
 }
 
 const ping = (url, token) => {
@@ -16,7 +50,7 @@ const ping = (url, token) => {
 }
 
 const paramsGen = (token, fields) => {
-    if (!token) throw new Error("No token for Joplin Api provided")
+    if (!token) throw new Error('No token for Joplin Api provided')
     let params = `?token=${token}`
     if (fields) params += `&fields=${fields}`
     return params
@@ -34,7 +68,7 @@ const get = (url, token, fields) => {
     return rp({ uri: url + params, json: true })
 }
 
-const exporter = async (url, token, datetime, iteratee) => {
+const exporter = async (url, token, datetime, iteratee, resourceIteratee) => {
     try {
         const date = new Date(datetime);
         const notes = await get(urlGen(url, 'notes'), token, 'id,updated_time')
@@ -45,8 +79,14 @@ const exporter = async (url, token, datetime, iteratee) => {
                 const notebook = await get(urlGen(url, 'folders', fullNote.parent_id), token, 'title')
                 const tags = await get(urlGen(url, 'notes', note.id, 'tags'), token, 'title')
                 const tagTitles = tags.map(tag => tag.title)
-                console.log(tagTitles)
-                extractQuiz(iteratee, fullNote.body, fullNote.title, notebook.title, tagTitles)
+                const jtaItems = extractQuiz(fullNote.body, fullNote.title, notebook.title, tagTitles)
+                const resources = await get(urlGen(url, 'notes', note.id, 'resources'), token)
+                console.log(resources)
+                const jtaItemsWithResourceDetails = addResources(jtaItems, resources)
+                const iterateeInvocations = jtaItemsWithResourceDetails.map(item => {
+                    return iteratee(process.env.ANKI_URL, item.question, item.answer, item.jtaID, item.title, item.notebook, item.tags)
+                })
+                await Promise.all(iterateeInvocations)
             }
         })
     } catch (error) {
