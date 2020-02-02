@@ -146,7 +146,18 @@ const updateNote = (url, id, question, answer, jtaID, notebook, tags) => {
         }
     })
     return doRequest(options)
+}
 
+const storeMedia = (url, fileName, data) => {
+    const options = optionsGen(url, {
+        "action": "storeMediaFile",
+        "version": 6,
+        "params": {
+            "filename": fileName,
+            data,
+        }
+    })
+    return doRequest(options)
 }
 
 const importer = async (url, question, answer, jtaID, title, notebook, tags) => {
@@ -169,4 +180,5 @@ module.exports = {
     ping,
     setup,
     importer,
+    storeMedia,
 }

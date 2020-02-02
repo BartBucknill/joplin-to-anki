@@ -88,8 +88,11 @@ const exporter = async (url, token, datetime, iteratee, resourceIteratee) => {
                 jtaItemsWithResourceDetails.forEach(item => {
                     promises.push(iteratee(process.env.ANKI_URL, item.question, item.answer, item.jtaID, item.title, item.notebook, item.tags))
                     if (item.resources && item.resources.length > 0) {
-                        item.resources.forEach(resource => {
-                            promises.push(resourceIteratee(process.env.ANKI_URL, resource.id, resource.fileName))
+                        item.resources.forEach(async resource => {
+                            //TODO: invoke resourceIteratee with base64 file content and file name
+                            const file = await get(urlGen(url, 'resources', resource.id, 'file'), token)
+                            console.log({file: Buffer.from(file).toString('base64')})
+                            promises.push(resourceIteratee(process.env.ANKI_URL, resource.fileName, Buffer.from(file).toString('base64')))
                         })
                     }
                 })

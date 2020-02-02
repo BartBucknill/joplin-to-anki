@@ -69,7 +69,7 @@ const run = async() => {
     }
 
     try {
-       await joplin.exporter(env.JOPLIN_URL, env.JOPLIN_TOKEN, env.EXPORT_FROM_DATE, anki.importer)
+       await joplin.exporter(env.JOPLIN_URL, env.JOPLIN_TOKEN, env.EXPORT_FROM_DATE, anki.importer, anki.storeMedia)
     } catch (error) {
         console.error(`Problem with job: ${error}`)
         process.exit()
