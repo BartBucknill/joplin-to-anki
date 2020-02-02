@@ -19,6 +19,8 @@ const escapeRegExp = string => {
     return string.replace(reRegExpChar, '\\$&')
 }
 
+const resourceFileName = (title, id, extension) => `${title ? path.parse(title).name : id}.${extension}`
+
 const addResources = (jtaItems, resources) => {
     const preppedResources = resources.map(resource => {
         const fileName = `${resource.title ? path.parse(resource.title).name : resource.id}.${resource.file_extension}`
@@ -81,12 +83,17 @@ const exporter = async (url, token, datetime, iteratee, resourceIteratee) => {
                 const tagTitles = tags.map(tag => tag.title)
                 const jtaItems = extractQuiz(fullNote.body, fullNote.title, notebook.title, tagTitles)
                 const resources = await get(urlGen(url, 'notes', note.id, 'resources'), token)
-                console.log(resources)
                 const jtaItemsWithResourceDetails = addResources(jtaItems, resources)
-                const iterateeInvocations = jtaItemsWithResourceDetails.map(item => {
-                    return iteratee(process.env.ANKI_URL, item.question, item.answer, item.jtaID, item.title, item.notebook, item.tags)
+                const promises = []
+                jtaItemsWithResourceDetails.forEach(item => {
+                    promises.push(iteratee(process.env.ANKI_URL, item.question, item.answer, item.jtaID, item.title, item.notebook, item.tags))
+                    if (item.resources && item.resources.length > 0) {
+                        item.resources.forEach(resource => {
+                            promises.push(resourceIteratee(process.env.ANKI_URL, resource.id, resource.fileName))
+                        })
+                    }
                 })
-                await Promise.all(iterateeInvocations)
+                await Promise.all(promises)
             }
         })
     } catch (error) {

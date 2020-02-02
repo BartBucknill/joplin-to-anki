@@ -5,7 +5,7 @@ const { parsed: env } = dotenv.config()
 const { noteBody } = require('./joplin-test-data/sample-note')
 const test = async () => {
     console.log(env)
-    const result = await exporter(env.JOPLIN_URL, env.JOPLIN_TOKEN, env.EXPORT_FROM_DATE, ()=>{})
+    const result = await exporter(env.JOPLIN_URL, env.JOPLIN_TOKEN, env.EXPORT_FROM_DATE, ()=>{}, ()=>{})
         .catch(console.error)
     console.log(result)
 }
