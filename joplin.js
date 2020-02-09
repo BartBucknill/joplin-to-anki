@@ -1,6 +1,7 @@
 const path = require('path');
 const rp = require('request-promise-native')
 const cheerio = require('cheerio')
+const fs = require('fs')
 
 const extractQuiz = (body, title, notebook, tags) => {
     const $ = cheerio.load(body)
@@ -18,8 +19,6 @@ const escapeRegExp = string => {
     const reRegExpChar = /[\\^$.*+?()[\]{}|]/g
     return string.replace(reRegExpChar, '\\$&')
 }
-
-const resourceFileName = (title, id, extension) => `${title ? path.parse(title).name : id}.${extension}`
 
 const addResources = (jtaItems, resources) => {
     const preppedResources = resources.map(resource => {
@@ -65,9 +64,13 @@ const urlGen = (baseURL, resource, id, subResource) => {
     return url
 }
 
-const get = (url, token, fields) => {
+const get = (url, token, fields, parseJSON = true, encoding = undefined) => {
     const params = paramsGen(token, fields)
-    return rp({ uri: url + params, json: true })
+    const options = { uri: url + params, json: parseJSON }
+    if (encoding) {
+        options.encoding = encoding
+    }
+    return rp(options)
 }
 
 const exporter = async (url, token, datetime, iteratee, resourceIteratee) => {
@@ -89,10 +92,9 @@ const exporter = async (url, token, datetime, iteratee, resourceIteratee) => {
                     promises.push(iteratee(process.env.ANKI_URL, item.question, item.answer, item.jtaID, item.title, item.notebook, item.tags))
                     if (item.resources && item.resources.length > 0) {
                         item.resources.forEach(async resource => {
-                            //TODO: invoke resourceIteratee with base64 file content and file name
-                            const file = await get(urlGen(url, 'resources', resource.id, 'file'), token)
-                            console.log({file: Buffer.from(file).toString('base64')})
-                            promises.push(resourceIteratee(process.env.ANKI_URL, resource.fileName, Buffer.from(file).toString('base64')))
+                            const file = await get(urlGen(url, 'resources', resource.id, 'file'), token, undefined, false, 'binary')
+                            fs.writeFileSync(`./${resource.fileName}`, file, 'binary')
+                            promises.push(resourceIteratee(process.env.ANKI_URL, resource.fileName, Buffer.from(file, 'binary').toString('base64')))
                         })
                     }
                 })
