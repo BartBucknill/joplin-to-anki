@@ -73,11 +73,21 @@ const get = (url, token, fields, parseJSON = true, encoding = undefined) => {
     return rp(options)
 }
 
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+      await callback(array[index], index, array);
+    }
+  }
+
 const exporter = async (url, token, datetime, iteratee, resourceIteratee) => {
     try {
         const date = new Date(datetime);
         const notes = await get(urlGen(url, 'notes'), token, 'id,updated_time')
-        notes.forEach(async note => {
+        asyncForEach(notes, async note => {
             const noteDate = new Date(note.updated_time)
             if (noteDate.getTime() > date.getTime()) {
                 const fullNote = await get(urlGen(url, 'notes', note.id), token, 'title,body,parent_id')
@@ -87,18 +97,18 @@ const exporter = async (url, token, datetime, iteratee, resourceIteratee) => {
                 const jtaItems = extractQuiz(fullNote.body, fullNote.title, notebook.title, tagTitles)
                 const resources = await get(urlGen(url, 'notes', note.id, 'resources'), token)
                 const jtaItemsWithResourceDetails = addResources(jtaItems, resources)
-                const promises = []
-                jtaItemsWithResourceDetails.forEach(item => {
-                    promises.push(iteratee(process.env.ANKI_URL, item.question, item.answer, item.jtaID, item.title, item.notebook, item.tags))
+                asyncForEach(jtaItemsWithResourceDetails, async item => {
+                    // console.log({item})
+                    await iteratee(process.env.ANKI_URL, item.question, item.answer, item.jtaID, item.title, item.notebook, item.tags)
+                    .catch(err => console.log(`Oops! Something went wrong calling iteratee:\n${err}\nItem: ${JSON.stringify(item)}`))
                     if (item.resources && item.resources.length > 0) {
-                        item.resources.forEach(async resource => {
+                        asyncForEach(item.resources, async resource => {
                             const file = await get(urlGen(url, 'resources', resource.id, 'file'), token, undefined, false, 'binary')
-                            fs.writeFileSync(`./${resource.fileName}`, file, 'binary')
-                            promises.push(resourceIteratee(process.env.ANKI_URL, resource.fileName, Buffer.from(file, 'binary').toString('base64')))
+                            await resourceIteratee(process.env.ANKI_URL, resource.fileName, Buffer.from(file, 'binary').toString('base64'))
+                            .catch(err => console.log(`Oops! Something went wrong calling resourceIteratee:\n ${err}\nItem: ${JSON.stringify(item)}`))
                         })
                     }
                 })
-                await Promise.all(promises)
             }
         })
     } catch (error) {
