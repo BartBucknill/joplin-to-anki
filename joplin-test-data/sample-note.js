@@ -1,5 +1,6 @@
 module.exports = {
-    noteBody: `## Joplin
+  title: "Note Title",
+  body: `## Joplin
 cmd + G : go to anything
 
 <div class="jta" data-id="2020-01-11T17-37-49-563" style="margin-top: 15px;">
@@ -29,5 +30,5 @@ How to enter multiline edit mode in VS Code?
 </span><details class="answer"><summary>Answer:</summary>
 opt + cmd + up/down
 </details>
-</div>`
-}
+</div>`,
+};
