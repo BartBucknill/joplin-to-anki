@@ -1,4 +1,3 @@
-
 /**
  * STARTUP:
  *  - [ ] check env vars/config for: Joplin api key, mostRecentDate, base urls
@@ -33,48 +32,31 @@
  *  - [ ] tests
  */
 
-const joplin = require('./joplin');
-const anki = require('./anki')
+const joplin = require("./joplin-exporter");
+const anki = require("./anki-importer");
 
-const dotenv = require('dotenv')
-const { parsed: env } = dotenv.config()
+const dotenv = require("dotenv");
+const { parsed: env } = dotenv.config();
 
 const log = (msg) => {
-    if (!!env.DEBUG) {
-        console.log(msg)
-    }
-}
+  if (!!env.DEBUG) {
+    console.log(msg);
+  }
+};
 
-const run = async() => {
+const run = async () => {
+  try {
+    await joplin.exporter(
+      env.JOPLIN_URL,
+      env.JOPLIN_TOKEN,
+      env.EXPORT_FROM_DATE,
+      anki.importer,
+      anki.storeMedia
+    );
+  } catch (error) {
+    console.error(`Problem with job: ${error}`);
+    process.exit();
+  }
+};
 
-    const pingJoplin = await joplin.ping(env.JOPLIN_URL)
-    if (pingJoplin != 'JoplinClipperServer') {
-        console.error(`Did not recieve expected response from Anki api at ${env.JOPLIN_URL}/ping\nResponse: ${pingJoplin}\nExiting.`)
-        process.exit()
-    }
-    log('Pinged Joplin')
-
-    const pingAnki = await anki.ping(env.ANKI_URL)
-    if (pingAnki != 'AnkiConnect v.6') {
-        console.error(`Did not recieve expected response from Anki api at ${env.ANKI_URL}\nResponse: ${pingAnki}\nExiting.`)
-        process.exit()
-    }
-    log('Pinged Anki')
-
-    try {
-        await anki.setup(env.ANKI_URL)
-    } catch (error) {
-        console.error(`Problem with Anki prerequisites (Joplin deck and model): ${error}`)
-        process.exit()
-    }
-
-    try {
-       await joplin.exporter(env.JOPLIN_URL, env.JOPLIN_TOKEN, env.EXPORT_FROM_DATE, anki.importer, anki.storeMedia)
-    } catch (error) {
-        console.error(`Problem with job: ${error}`)
-        process.exit()
-    }
-
-}
-
-run()
+run();

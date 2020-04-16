@@ -1,5 +1,5 @@
 module.exports = {
-  title: "Note Title",
+  title: "Test Note Joplin to Anki",
   body: `## Joplin
 cmd + G : go to anything
 
