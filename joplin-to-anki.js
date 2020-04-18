@@ -98,11 +98,11 @@ const run = async (
     `
 Found ${summary.items} jta items in Joplin notes updated since last run.
 Imported ${summary.itemsSuccess} jta items to Anki; ${
-      summary.itemsSuccess - summary.items
+      summary.items - summary.itemsSuccess
     } failures.
 Found ${summary.resources} resources attached to JTA items.
 Imported ${summary.resourcesSuccess} resources to Anki; ${
-      summary.resourcesSuccess - summary.resources
+      summary.resources - summary.resourcesSuccess
     } failures.
   `
   );
