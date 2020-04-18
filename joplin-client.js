@@ -1,9 +1,9 @@
 const rp = require("request-promise-native");
-const { newLogger } = require("./log");
+const { levelApplication, levelVerbose, levelDebug } = require("./log");
 
 const healthyPingResponse = "JoplinClipperServer";
 
-const newClient = (url, token, debug) => {
+const newClient = (url, token, log) => {
   if (!url) {
     throw new Error("No url for Joplin Api provided");
   }
@@ -13,7 +13,7 @@ const newClient = (url, token, debug) => {
   return {
     url,
     token,
-    log: newLogger(debug),
+    log,
     ping() {
       return rp(this.urlGen("ping"));
     },
@@ -34,7 +34,7 @@ const newClient = (url, token, debug) => {
     request(url, method, body, fields, parseJSON = true, encoding) {
       const params = this.paramsGen(fields);
       const options = { method, uri: url + params, json: parseJSON };
-      this.log(`Request options: ${JSON.stringify(options)}`);
+      this.log(levelDebug, `Request options: ${JSON.stringify(options)}`);
       if (body) {
         options.body = body;
       }
@@ -51,7 +51,7 @@ const newClient = (url, token, debug) => {
           `Did not receive expected response from Joplin Web Clipper API at ${this.url}/ping\nResponse: ${response}\nExiting.`
         );
       }
-      this.log("Joplin API Healthy");
+      this.log(levelVerbose, "Joplin API Healthy");
     },
   };
 };

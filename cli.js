@@ -1,6 +1,7 @@
 const { program } = require("commander");
 const jta = require("./joplin-to-anki");
 const configStore = require("./config");
+const { levelApplication, levelVerbose, levelDebug } = require("./log");
 
 program.version("0.0.0");
 
@@ -24,10 +25,12 @@ program
     "-a, --ankiurl <URL>",
     "URL for Anki Connect API",
     configStore.getWithFallback("ankiURL")
+  )
+  .option(
+    `-l, --loglevel <one of ${levelApplication}, ${levelVerbose}, ${levelDebug}>`,
+    "Enable verbose logs",
+    levelApplication
   );
-//TODO
-//   .option("-v, --verbose", "Enable verbose logs")
-//   .option("--debug", "Enable debug logs (verbose logs and more)")
 
 program
   .command("run")
@@ -40,6 +43,7 @@ program
   .action(async () => {
     const now = new Date().toISOString();
     await jta.run(
+      program.loglevel,
       program.joplinurl,
       program.joplintoken,
       program.date,

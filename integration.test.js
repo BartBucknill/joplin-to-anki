@@ -6,8 +6,10 @@ const dotenv = require("dotenv");
 
 const assert = require("assert");
 const { parsed: env } = dotenv.config();
-const jClient = joplin.newClient(env.JOPLIN_URL, env.JOPLIN_TOKEN, true);
-const aClient = anki.newClient(env.ANKI_URL, true);
+const { newLogger, levelDebug } = require("./log");
+const log = newLogger(levelDebug);
+const jClient = joplin.newClient(env.JOPLIN_URL, env.JOPLIN_TOKEN, log);
+const aClient = anki.newClient(env.ANKI_URL, log);
 const fromDate = new Date().toISOString();
 
 describe("Joplin to Anki integration", function () {

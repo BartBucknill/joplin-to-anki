@@ -1,15 +1,14 @@
 const rp = require("request-promise-native");
-const { newLogger } = require("./log");
+const { levelApplication, levelVerbose, levelDebug } = require("./log");
 
 const healthyPingResponse = "AnkiConnect v.6";
-//TODO: these should not be at the client level
 const modelName = "Joplin to Anki";
 const deckName = "Joplin to Anki";
 
-const newClient = (url, debug) => {
+const newClient = (url, log) => {
   return {
     url,
-    log: newLogger(debug),
+    log,
 
     formatTag(string) {
       return string.replace(/ /g, "_");
@@ -190,7 +189,7 @@ const newClient = (url, debug) => {
           `Did not receive expected response from Anki Connect API at ${env.ANKI_URL}\nResponse: ${result}\nExiting.`
         );
       }
-      this.log("Anki Connect API Healthy");
+      this.log(levelVerbose, "Anki Connect API Healthy");
     },
   };
 };

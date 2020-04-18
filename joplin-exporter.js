@@ -116,7 +116,6 @@ async function* exporter(client, datetime) {
           yield {
             type: typeResource,
             data: {
-              //TODO: use combo of id and filename to avoid risk from images with same filename
               fileName: resource.fileName,
               data: Buffer.from(file, "binary").toString("base64"),
             },
