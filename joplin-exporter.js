@@ -1,20 +1,13 @@
 const path = require("path");
 const cheerio = require("cheerio");
 
-const genHTML = (body) => {
-  var markdown = require("markdown").markdown;
-  console.log(markdown.toHTML(body));
-};
-
 const extractQuiz = (body, title, notebook, tags) => {
   const $ = cheerio.load(body);
   let output = [];
   $(".jta").each((i, el) => {
     const jtaID = $(el).attr("data-id");
     const question = $(".question", el).text();
-    console.log("Question HTML: ", genHTML(question));
     const answer = $(".answer", el).text();
-    console.log("Answer HTML: ", genHTML(answer));
     output.push({ question, answer, jtaID, title, notebook, tags });
   });
   return output;
@@ -27,16 +20,14 @@ const escapeRegExp = (string) => {
 
 const addResources = (jtaItems, resources) => {
   const preppedResources = resources.map((resource) => {
-    const fileName = `${
-      resource.title ? path.parse(resource.title).name : resource.id
-    }.${resource.file_extension}`;
+    const fileName = `${resource.id}.${resource.file_extension}`;
     return {
       fileName,
       expectedLinkRgx: new RegExp(
         escapeRegExp(`![${resource.title}](:\/${resource.id})`),
         "g"
       ),
-      replacementLink: `<div><img src="${fileName}"><br></div>`,
+      replacementLink: `![${resource.title}](${fileName})`,
       id: resource.id,
     };
   });

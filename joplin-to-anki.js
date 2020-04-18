@@ -1,3 +1,4 @@
+const markdown = require("markdown").markdown;
 const {
   exporter,
   typeItem,
@@ -32,8 +33,8 @@ const run = async (joplinURL, joplinToken, exportFromDate, ankiURL) => {
         try {
           await importer(
             aClient,
-            value.data.question,
-            value.data.answer,
+            markdown.toHTML(value.data.question),
+            markdown.toHTML(value.data.answer),
             value.data.jtaID,
             value.data.title,
             value.data.notebook,
