@@ -1,8 +1,11 @@
 {
-  "name": "joplin-to-anki",
+  "name": "jta",
   "version": "0.0.0",
   "description": "Export from Joplin and import into Anki",
-  "main": "index.js",
+  "main": "bin/jta",
+  "bin": {
+    "jta": "./bin/jta"
+  },
   "scripts": {
     "test": "npm run test:joplin-exporter && npm run test:integration",
     "test:joplin-exporter": "./node_modules/mocha/bin/mocha joplin.test.js",

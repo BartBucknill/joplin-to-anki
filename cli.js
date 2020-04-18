@@ -5,7 +5,7 @@ const configStore = require("./config");
 program.version("0.0.0");
 
 program
-  .requiredOption(
+  .option(
     "-t, --joplintoken <token>",
     "token for Joplin Web Clipper API",
     configStore.get("joplinToken")
@@ -32,6 +32,11 @@ program
 program
   .command("run")
   .description("export from Joplin to Anki")
+  .requiredOption(
+    "-t, --joplintoken <token>",
+    "token for Joplin Web Clipper API",
+    configStore.get("joplinToken")
+  )
   .action(async () => {
     const now = new Date().toISOString();
     await jta.run(
@@ -65,4 +70,7 @@ config
     console.log(configStore.getAll());
   });
 
-program.parse(process.argv);
+function cli(args) {
+  program.parse(args);
+}
+module.exports = cli;

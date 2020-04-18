@@ -12,7 +12,7 @@ const { newLogger } = require("./log");
 const log = newLogger(true);
 
 const run = async (joplinURL, joplinToken, exportFromDate, ankiURL) => {
-  const jClient = joplin.newClient(joplinURL, joplinToken, false);
+  const jClient = joplin.newClient(joplinURL, joplinToken, true);
   const aClient = anki.newClient(ankiURL, true);
   await jClient.health();
   await aClient.health();

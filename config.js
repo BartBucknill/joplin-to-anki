@@ -5,8 +5,8 @@ const defaultExportFromDate = new Date();
 defaultExportFromDate.setDate(defaultExportFromDate.getDate() - 1);
 
 const defaultConfigs = {
-  ankiURL: "http://localhost:41184",
-  joplinURL: "http://localhost:8765",
+  joplinURL: "http://localhost:41184",
+  ankiURL: "http://localhost:8765",
   exportFromDate: defaultExportFromDate,
 };
 
