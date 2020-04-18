@@ -2,6 +2,8 @@
 
 Create question/answers within Joplin notes and import them into Anki.
 
+![jta demo](jta-demo-a.gif)
+
 ## Features
 
 - Create jta question/answers in Joplin and sync them to Anki
