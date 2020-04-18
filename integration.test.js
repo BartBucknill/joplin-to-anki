@@ -8,6 +8,7 @@ const assert = require("assert");
 const { parsed: env } = dotenv.config();
 const jClient = joplin.newClient(env.JOPLIN_URL, env.JOPLIN_TOKEN, true);
 const aClient = anki.newClient(env.ANKI_URL, true);
+const fromDate = new Date().toISOString();
 
 describe("Joplin to Anki integration", function () {
   before("Healthcheck Joplin API", async function () {
@@ -34,12 +35,7 @@ describe("Joplin to Anki integration", function () {
     await aClient.deleteNotes(notes);
   });
   before("run joplin-to-anki (import from Joplin to Anki)", async function () {
-    await run(
-      env.JOPLIN_URL,
-      env.JOPLIN_TOKEN,
-      env.EXPORT_FROM_DATE,
-      env.ANKI_URL
-    );
+    await run(env.JOPLIN_URL, env.JOPLIN_TOKEN, fromDate, env.ANKI_URL);
   });
   it("should create 3 Anki notes from Joplin note", async function () {
     const notes = await aClient.findNote(
