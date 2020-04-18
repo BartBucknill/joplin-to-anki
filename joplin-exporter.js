@@ -44,6 +44,17 @@ const addResources = (jtaItems, resources) => {
         }
         item.resources.push({ id: resource.id, fileName: resource.fileName });
       }
+      if (resource.expectedLinkRgx.test(item.question)) {
+        const updatedQuestion = item.question.replace(
+          resource.expectedLinkRgx,
+          resource.replacementLink
+        );
+        item.question = updatedQuestion;
+        if (!item.resources) {
+          item.resources = [];
+        }
+        item.resources.push({ id: resource.id, fileName: resource.fileName });
+      }
     });
   });
   return jtaItems;

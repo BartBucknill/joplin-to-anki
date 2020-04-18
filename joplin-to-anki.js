@@ -96,12 +96,12 @@ const run = async (
   log(
     levelApplication,
     `
-Found ${summary.items} JTA items in Joplin notes updated since last run.
-Imported ${summary.itemsSuccess} to Anki; ${
+Found ${summary.items} jta items in Joplin notes updated since last run.
+Imported ${summary.itemsSuccess} jta items to Anki; ${
       summary.itemsSuccess - summary.items
     } failures.
 Found ${summary.resources} resources attached to JTA items.
-Imported ${summary.resourcesSuccess} to Anki; ${
+Imported ${summary.resourcesSuccess} resources to Anki; ${
       summary.resourcesSuccess - summary.resources
     } failures.
   `
