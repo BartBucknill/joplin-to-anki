@@ -187,7 +187,7 @@ const newClient = (url, debug) => {
       const result = await this.ping();
       if (result != healthyPingResponse) {
         throw new error(
-          `Did not receive expected response from Anki api at ${env.ANKI_URL}\nResponse: ${result}\nExiting.`
+          `Did not receive expected response from Anki Connect API at ${env.ANKI_URL}\nResponse: ${result}\nExiting.`
         );
       }
       this.log("Anki Connect API Healthy");

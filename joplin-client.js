@@ -48,7 +48,7 @@ const newClient = (url, token, debug) => {
       const response = await this.ping();
       if (response != healthyPingResponse) {
         throw new Error(
-          `Did not receive expected response from Anki api at ${this.url}/ping\nResponse: ${response}\nExiting.`
+          `Did not receive expected response from Joplin Web Clipper API at ${this.url}/ping\nResponse: ${response}\nExiting.`
         );
       }
       this.log("Joplin API Healthy");
