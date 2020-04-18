@@ -10,7 +10,7 @@ Create quiz entries inside Joplin notes and auto import them as notes into Anki.
 **TODO**
 
 - [x] Convert markdown from Joplin to HTML in Anki.
-- [ ] Implement basic cli for configuring with params: urls, Joplin token, last export date. Store as config.
-- [ ] Get/update last export date as config.
+- [x] Implement basic cli for configuring with params: urls, Joplin token, last export date. Store as config.
+- [x] Get/update last export date as config.
 - [ ] Improve logging: log levels exposed in cli, log summary of export / import.
 - [ ] Document usage.

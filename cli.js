@@ -33,12 +33,14 @@ program
   .command("run")
   .description("export from Joplin to Anki")
   .action(async () => {
+    const now = new Date().toISOString();
     await jta.run(
       program.joplinurl,
       program.joplintoken,
       program.date,
       program.ankiurl
     );
+    configStore.set("exportFromDate", now);
   });
 
 const config = program.command("config").description("Get/set configs for JTA");
