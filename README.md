@@ -2,7 +2,7 @@
 
 Create question/answers within Joplin notes and import them into Anki.
 
-![jta demo](jta-demo-a.gif)
+![jta demo](resources/jta-demo-a.gif)
 
 ## Features
 
