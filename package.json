@@ -4,7 +4,8 @@
   "description": "Export from Joplin and import into Anki",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha joplin.test.js",
+    "test": "npm run test:joplin-exporter && npm run test:integration",
+    "test:joplin-exporter": "./node_modules/mocha/bin/mocha joplin.test.js",
     "test:integration": "./node_modules/mocha/bin/mocha integration.test.js"
   },
   "keywords": [

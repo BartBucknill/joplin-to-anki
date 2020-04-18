@@ -1,5 +1,4 @@
 const path = require("path");
-const EventEmitter = require("events").EventEmitter;
 const cheerio = require("cheerio");
 
 const genHTML = (body) => {
@@ -126,8 +125,9 @@ async function* exporter(client, datetime) {
           yield {
             type: typeResource,
             data: {
-              fileName: resource.id,
-              data: file,
+              //TODO: use combo of id and filename to avoid risk from images with same filename
+              fileName: resource.fileName,
+              data: Buffer.from(file, "binary").toString("base64"),
             },
           };
         }

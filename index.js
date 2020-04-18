@@ -31,32 +31,18 @@
  *  - [ ] instantiate anki/joplin modules with needed env vars so they don't need passing int
  *  - [ ] tests
  */
-
-const joplin = require("./joplin-exporter");
-const anki = require("./anki-importer");
-
+const { run } = require("./joplin-to-anki");
 const dotenv = require("dotenv");
+
 const { parsed: env } = dotenv.config();
 
-const log = (msg) => {
-  if (!!env.DEBUG) {
-    console.log(msg);
-  }
-};
+async function main() {
+  await run(
+    env.JOPLIN_URL,
+    env.JOPLIN_TOKEN,
+    env.EXPORT_FROM_DATE,
+    env.ANKI_URL
+  );
+}
 
-const run = async () => {
-  try {
-    await joplin.exporter(
-      env.JOPLIN_URL,
-      env.JOPLIN_TOKEN,
-      env.EXPORT_FROM_DATE,
-      anki.importer,
-      anki.storeMedia
-    );
-  } catch (error) {
-    console.error(`Problem with job: ${error}`);
-    process.exit();
-  }
-};
-
-run();
+main();

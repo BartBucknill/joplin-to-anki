@@ -6,14 +6,14 @@ const healthyPingResponse = "AnkiConnect v.6";
 const modelName = "Joplin to Anki";
 const deckName = "Joplin to Anki";
 
-function formatTag(string) {
-  return string.replace(/ /g, "_");
-}
-
 const newClient = (url, debug) => {
   return {
     url,
     log: newLogger(debug),
+
+    formatTag(string) {
+      return string.replace(/ /g, "_");
+    },
 
     optionsGen(body) {
       return {
@@ -99,6 +99,17 @@ const newClient = (url, debug) => {
       return this.doRequest(options);
     },
 
+    deleteNotes(ids) {
+      const options = this.optionsGen({
+        action: "deleteNotes",
+        version: 6,
+        params: {
+          notes: ids,
+        },
+      });
+      return this.doRequest(options);
+    },
+
     createNote(question, answer, jtaID, title, notebook, tags) {
       const options = this.optionsGen({
         action: "addNote",
@@ -114,8 +125,8 @@ const newClient = (url, debug) => {
             },
             tags: [
               "joplin_to_anki",
-              formatTag(title),
-              formatTag(notebook),
+              this.formatTag(title),
+              this.formatTag(notebook),
               ...tags,
             ],
           },
@@ -125,9 +136,9 @@ const newClient = (url, debug) => {
     },
 
     updateNoteTags(id, title, notebook, joplinTags) {
-      const tags = joplinTags.map((tag) => formatTag(tag));
-      tags.push(formatTag(title));
-      tags.push(formatTag(notebook));
+      const tags = joplinTags.map((tag) => this.formatTag(tag));
+      tags.push(this.formatTag(title));
+      tags.push(this.formatTag(notebook));
       const options = this.optionsGen({
         action: "addTags",
         version: 6,
