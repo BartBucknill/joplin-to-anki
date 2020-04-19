@@ -37,7 +37,13 @@ describe("Joplin to Anki integration", function () {
     await aClient.deleteNotes(notes);
   });
   before("run joplin-to-anki (import from Joplin to Anki)", async function () {
-    await run(env.JOPLIN_URL, env.JOPLIN_TOKEN, fromDate, env.ANKI_URL);
+    await run(
+      levelDebug,
+      env.JOPLIN_URL,
+      env.JOPLIN_TOKEN,
+      fromDate,
+      env.ANKI_URL
+    );
   });
   it("should create 3 Anki notes from Joplin note", async function () {
     const notes = await aClient.findNote(
