@@ -1,4 +1,3 @@
-const path = require("path");
 const cheerio = require("cheerio");
 
 const extractQuiz = (body, title, notebook, tags) => {

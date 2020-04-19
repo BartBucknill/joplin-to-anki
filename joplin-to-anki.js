@@ -1,4 +1,4 @@
-const markdown = require("markdown").markdown;
+const marked = require("marked");
 const {
   exporter,
   typeItem,
@@ -56,8 +56,8 @@ const run = async (
         try {
           await importer(
             aClient,
-            markdown.toHTML(value.data.question),
-            markdown.toHTML(value.data.answer),
+            marked(value.data.question),
+            marked(value.data.answer),
             value.data.jtaID,
             value.data.title,
             value.data.notebook,
@@ -96,7 +96,7 @@ const run = async (
   log(
     levelApplication,
     `
-Found ${summary.items} jta items in Joplin notes updated since last run.
+Found ${summary.items} jta items in Joplin note(s) updated since last run.
 Imported ${summary.itemsSuccess} jta items to Anki; ${
       summary.items - summary.itemsSuccess
     } failures.
